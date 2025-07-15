@@ -1,9 +1,11 @@
 package com.exemplo.agendamento.controller;
 
-import com.exemplo.agendamento.model.Usuario;
-import com.exemplo.agendamento.service.UsuarioService;
-import com.exemplo.agendamento.security.JwtUtil;
 import com.exemplo.agendamento.dto.LoginDTO;
+import com.exemplo.agendamento.dto.UsuarioDTO;
+import com.exemplo.agendamento.model.Usuario;
+import com.exemplo.agendamento.security.JwtUtil;
+import com.exemplo.agendamento.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,12 +28,17 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<Usuario> registrar(@RequestBody Usuario usuario) {
+    public ResponseEntity<Usuario> registrar(@Valid @RequestBody UsuarioDTO dto) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setSenha(dto.getSenha());
+        usuario.setTipo(dto.getTipo());
         return ResponseEntity.ok(usuarioService.salvar(usuario));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO login) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDTO login) {
         try {
             Authentication auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(login.getEmail(), login.getSenha()));
